@@ -1,12 +1,16 @@
 package com.smart.sms;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 /**
  * ************************************************************* Send SMS API class template using
@@ -57,6 +61,7 @@ public class SendSms {
         post.addHeader("Accept", "application/json");
         post.addHeader("Authorization", authorization);
 
+        try {
         //Create the body and set it to your request
         StringEntity jsonrequest = new StringEntity(
                 "{\"outboundSMSMessageRequest\":{\"address\":\"" + address
@@ -65,7 +70,6 @@ public class SendSms {
                 "UTF-8");
         post.setEntity(jsonrequest);
 
-        try {
             HttpResponse response = client.execute(post); // Execute the HttpPost
             // A successful response is HTTP 201 Created
             // which will include a response body.
@@ -78,8 +82,13 @@ public class SendSms {
                         .getReasonPhrase());
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        } catch (ClientProtocolException e) {
+            log.error(e);
+        } catch (UnsupportedEncodingException e) {
+            log.error(e);
+        } catch (IOException e) {
+            log.error(e);
         } finally {
             post.releaseConnection();
         }
